@@ -5,10 +5,7 @@ from numpy.linalg import norm
 import json
 from sklearn.decomposition import LatentDirichletAllocation as LDA
 
-# =================================================================
-# 步骤 1: 构建 Phi 矩阵 (词语-主题分布)
-# =================================================================
-
+# 步骤 1:构建 Phi 矩阵 (词语-主题分布)
 def create_phi_matrix(K, V):
     """构建 K x V 的 Phi 矩阵，保证主题区分度。"""
     
@@ -39,10 +36,7 @@ def create_phi_matrix(K, V):
     phi_matrix = phi_matrix / phi_matrix.sum(axis=1, keepdims=True)
     
     return phi_matrix
-
-# =================================================================
 # 步骤 2: 文档生成函数 (使用 Phi 矩阵)
-# =================================================================
 
 def generate_documents(phi_matrix, vocabulary, run_id, alpha_param, n_docs, doc_length):
     """
@@ -90,10 +84,7 @@ def generate_documents(phi_matrix, vocabulary, run_id, alpha_param, n_docs, doc_
     print("文档生成完成。")
     return all_documents_data
     
-# =================================================================
-# 步骤 3: 核心函数：模型训练与推断
-# =================================================================
-
+# 步骤 3: 核心函数：模型训练与推
 def train_and_predict_lda(dtm, data_dtm, K_topics):
     """
     训练 LDA 模型并推断 theta_pred。
@@ -117,9 +108,7 @@ def train_and_predict_lda(dtm, data_dtm, K_topics):
 
     return theta_pred_matrix
 
-# =================================================================
 # 步骤 4: 余弦相似度计算函数
-# =================================================================
 
 def calculate_cosine_similarity(vec_a, vec_b):
     """计算两个向量之间的余弦相似度"""
