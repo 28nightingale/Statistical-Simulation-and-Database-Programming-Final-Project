@@ -7,7 +7,7 @@ from sklearn.decomposition import LatentDirichletAllocation as LDA
 
 # 步骤 1:构建 Phi 矩阵 (词语-主题分布)
 def create_phi_matrix(K, V):
-    """构建 K x V 的 Phi 矩阵，保证主题区分度。"""
+    """构建 K x V 的 Phi 矩阵，保证主题区分度。矩阵元素为对应概率"""
     
     num_words_per_topic = V // K  
     phi_matrix = np.zeros((K, V))
@@ -15,6 +15,7 @@ def create_phi_matrix(K, V):
     high_prob_share = 0.90  
     low_prob_share = 0.10  
     
+    #保证概率归一化
     HIGH_PROB = high_prob_share / num_words_per_topic 
     LOW_PROB = low_prob_share / (V - num_words_per_topic) 
 
@@ -32,10 +33,11 @@ def create_phi_matrix(K, V):
         if end_index < V:
             phi_matrix[k, end_index:V] = LOW_PROB
 
-    # 归一化 (确保每行和为 1.0)
+    # 再次归一化，确保浮点数不影响
     phi_matrix = phi_matrix / phi_matrix.sum(axis=1, keepdims=True)
     
     return phi_matrix
+
 # 步骤 2: 文档生成函数 (使用 Phi 矩阵)
 
 def generate_documents(phi_matrix, vocabulary, run_id, alpha_param, n_docs, doc_length):
