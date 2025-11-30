@@ -92,7 +92,7 @@ def bulk_insert_documents(documents_data):
     try:
         cursor = conn.cursor()
         sql = "INSERT INTO documents_data (run_id, simulated_text, true_theta_vector) VALUES (?, ?, ?)"
-        cursor.executemany(sql, documents_data)
+        cursor.executemany(sql, documents_data) #批量入库
         conn.commit()
         print(f"{len(documents_data)} 条文档数据批量入库成功。")
         insert_success = True
@@ -104,7 +104,7 @@ def bulk_insert_documents(documents_data):
         conn.close()
     return insert_success
 
-#数据提取函数
+#数据提取函数（从数据存储回到数据分析）
 def fetch_documents_for_analysis(run_id):
     conn = get_db_connection()
     if conn is None: return None
@@ -118,7 +118,7 @@ def fetch_documents_for_analysis(run_id):
         results = cursor.fetchall()
         
         for row in results:
-            true_theta = json.loads(row['true_theta_vector']) 
+            true_theta = json.loads(row['true_theta_vector'])#反解析 
             data_list.append({
                 'doc_id': row['doc_id'],
                 'text': row['simulated_text'],

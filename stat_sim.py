@@ -70,7 +70,7 @@ def generate_documents(phi_matrix, vocabulary, run_id, alpha_param, n_docs, doc_
         # 3. 组装数据，准备入库
         simulated_text = " ".join(document_words)
         
-        # 将 numpy 数组转换为列表，再转换为 JSON 字符串
+        # 将 numpy 数组转换为列表，再转换为 JSON 字符串，SQLite只能存储文本、整数等，不能存Numpy数组
         theta_json = json.dumps(theta_true.tolist())
         
         # 数据元组格式: (run_id, simulated_text, theta_json)
@@ -81,32 +81,28 @@ def generate_documents(phi_matrix, vocabulary, run_id, alpha_param, n_docs, doc_
         ))
         
         if (i + 1) % 500 == 0:
-            print(f"    已生成 {i + 1} / {n_docs} 篇文档...")
+            print(f"    已生成 {i + 1} / {n_docs} 篇文档")
 
     print("文档生成完成。")
     return all_documents_data
     
-# 步骤 3: 核心函数：模型训练与推
-def train_and_predict_lda(dtm, data_dtm, K_topics):
-    """
-    训练 LDA 模型并推断 theta_pred。
-    """
-    
-    # 1. 初始化 LDA 模型
+# 步骤 3: 模型训练与推
+def train_and_predict_lda(dtm, data_dtm, K_topics):    
+    # 1. 配置LDA 模型
     lda_model = LDA(n_components=K_topics, 
-                    max_iter=10, 
-                    learning_method='batch', 
-                    random_state=42)
+                    max_iter=10, #最大迭代次数
+                    learning_method='batch', #模型学习方法
+                    random_state=42) #随机种子，保证实验结果可重复可比较。
     
     # 2. 训练模型 
-    print("   - 正在训练 LDA 模型 (K=5)...")
+    print("正在训练 LDA 模型 (K=5)")
     lda_model.fit(dtm)
     
     # 3. 推断主题分布 (theta_pred)
-    print("   - 正在推断文档主题分布 (theta_pred)...")
+    print("正在推断文档主题分布 (theta_pred)")
     theta_pred_matrix = lda_model.transform(data_dtm)
     
-    print("   - 模型训练完成。")
+    print("模型训练完成。")
 
     return theta_pred_matrix
 
@@ -120,7 +116,6 @@ def calculate_cosine_similarity(vec_a, vec_b):
     
     # 1. 计算点积 (A . B)
     # 此处假设 vec_a 和 vec_b 都是形状 (5,) 的一维向量，
-    # 如果传入了 (3000, 5)，则会报错。
     dot_product = np.dot(vec_a, vec_b)
     
     # 2. 计算模长 (L2 范数)
